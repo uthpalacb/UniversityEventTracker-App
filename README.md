@@ -1,56 +1,97 @@
-# Welcome to your Expo app 👋
+# University Event Tracker 📱🎓
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform mobile application built with **React Native**, **Expo (SDK 58)**, **Expo Router**, and **TypeScript** designed to help university students discover, filter, bookmark, and receive reminders for campus events.
 
-## Get started
+---
 
-1. Install dependencies
+#1. Overview & Problem Statement
 
-   ```bash
-   npm install
-   ```
+### What is the Application?
+**University Event Tracker** is a centralized mobile event management and discovery application tailored for university students. It provides an intuitive interface to browse upcoming academic, technical, sports, and cultural events happening on campus.
 
-2. Start the app
+### What Problem Does It Solve?
+In a typical university environment, announcements for hackathons, workshops, cultural festivals, and sports tournaments are scattered across physical notice boards, emails, and fragmented social media groups. Because of this, students frequently miss important events or struggle to keep track of schedules they are interested in. This application solves that problem by:
+- **Centralizing Event Information:** Bringing all campus events into a single, easily accessible mobile feed.
+- **Reducing Information Overload:** Allowing students to filter events based on specific interests (Tech, Sports, Cultural).
+- **Personalizing Schedules:** Enabling students to bookmark events of interest and receive instant local notifications as confirmation and reminders.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+#2. Application Screens & Their Purposes
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The application consists of **3 primary screens** managed via tab-based and hidden stack routing:
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. **Events Screen (`src/app/index.tsx`):**
+   - **Purpose:** Acts as the main landing screen of the application. It displays a scrollable feed of all upcoming university events, provides a category filter modal to narrow down events by type, and allows users to bookmark events directly from the feed.
+2. **Bookmarks Screen (`src/app/bookmarks.tsx`):**
+   - **Purpose:** Displays a personalized list of events saved by the user. Synchronized globally via React Context (`BookmarkContext`), it dynamically updates whenever an event is bookmarked or unbookmarked and displays an informative empty state when no bookmarks exist.
+3. **Event Detail Screen (`src/app/event-detail.tsx`):**
+   - **Purpose:** Provides an in-depth view of a selected event. When a user taps on any event card from either the Events feed or the Bookmarks list, they are navigated to this screen to view the full event banner, date, venue location, category, and detailed description.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+#3. Core React Native Components Used
 
-```bash
-npm run reset-project
-```
+The user interface and interactive functionality are built using the following core React Native components:
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+- **`View`:** Used across all screens (`index.tsx`, `bookmarks.tsx`, `event-detail.tsx`) as the fundamental layout container for structuring headers, cards, modals, and screen wrappers.
+- **`Text`:** Implemented throughout the application to render event titles, dates, locations, button labels, empty-state messages, and modal options.
+- **`FlatList`:** Used in both `index.tsx` and `bookmarks.tsx` to efficiently render performant, scrollable lists of event cards.
+- **`Image`:** Implemented inside event cards (`index.tsx`, `bookmarks.tsx`) and on the `event-detail.tsx` header to display event cover banners.
+- **`Pressable`:** Used for all interactive touch targets, including event cards (for navigation), the category filter button, modal category selection options, and bookmark toggle buttons.
+- **`Modal`:** Implemented in `index.tsx` to render a pop-up overlay menu that allows users to filter the event feed by category (`All`, `Tech`, `Sports`, `Cultural`).
 
-### Other setup steps
+---
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+#4. Expo Router Directory Structure
 
-## Learn more
+The application utilizes **Expo Router's file-based routing** system inside the `src/app/` directory:
 
-To learn more about developing your project with Expo, look at the following resources:
+```text
+src/
+├── app/
+│   ├── _layout.tsx        # Root layout configuring <Tabs> navigation and wrapping the app in <BookmarkProvider>
+│   ├── index.tsx          # Default initial route ("Events" bottom tab)
+│   ├── bookmarks.tsx      # Secondary bottom tab route ("Bookmarks" tab)
+│   └── event-detail.tsx   # Dynamic detail route hidden from the bottom tab bar using `href: null`
+├── context/
+│   └── BookmarkContext.tsx # Global React Context state for managing bookmarked events across tabs
+└── data/
+    └── events.ts          # Structured TypeScript dataset and interfaces for university events
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+    _layout.tsx: Defines the bottom tab navigator (<Tabs>) with custom @expo/vector-icons (Ionicons) for the Events and Bookmarks tabs, while wrapping the navigation tree inside BookmarkProvider so state is shared seamlessly across screens.
 
-## Join the community
+    Hidden Route (event-detail.tsx): Configured with options={{ href: null }} in _layout.tsx so it remains accessible programmatically via router.push() when tapping an event card without cluttering the bottom tab bar.
 
-Join our community of developers creating universal apps.
+#5. Implementing Local Notifications (expo-notifications)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Research & Approach
+To notify users immediately upon bookmarking an event without requiring a complex backend push-notification server, I researched Expo's native device notification capabilities and selected the expo-notifications library.
+
+Implementation Details
+Package Integration: Installed expo-notifications compatible with Expo SDK 58.
+
+Immediate Triggering: Within the handleBookmark function in src/app/index.tsx, Notifications.scheduleNotificationAsync() is invoked asynchronously whenever a user toggles a bookmark.
+
+Configuration: Set trigger: null so the notification fires instantaneously on the device, displaying a custom title ("University Event Tracker") and dynamic body text referencing the specific bookmarked event title, paired with an immediate UI state update via BookmarkContext.
+
+
+#6. Local Setup & Installation Guide
+Follow these steps to clone, install dependencies, and run the project locally on your machine:
+
+Installation & Running Commands
+
+Clone the repository:
+git clone [https://github.com/uthpalacb/UniversityEventTracker-App.git](https://github.com/uthpalacb/UniversityEventTracker-App.git)
+
+
+Navigate into the project directory:
+cd UniversityEventTracker-App
+
+
+Install required dependencies:
+npm install
+
+
+Start the Expo development server:
+npx expo start -c
