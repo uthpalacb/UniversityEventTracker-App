@@ -1,4 +1,4 @@
-# University Event Tracker 📱🎓
+# University Event Tracker git 
 
 A cross-platform mobile application built with **React Native**, **Expo (SDK 58)**, **Expo Router**, and **TypeScript** designed to help university students discover, filter, bookmark, and receive reminders for campus events.
 
