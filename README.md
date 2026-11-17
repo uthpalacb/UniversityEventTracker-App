@@ -95,3 +95,9 @@ npm install
 
 Start the Expo development server:
 npx expo start -c
+
+
+
+## Demonstration Video
+You can watch the full walkthrough and feature demonstration of the University Event Tracker app here:
+https://drive.google.com/file/d/1n-aDl5Bb4p7t8Doj15OdpGlBuI9RFJDS/view?usp=sharing
